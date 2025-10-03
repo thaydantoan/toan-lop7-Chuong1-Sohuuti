@@ -65,7 +65,7 @@
             border-radius: 4px;
             width: 250px;
         }
-        button {
+        .action-button {
             display: block;
             width: 100%;
             padding: 15px;
@@ -76,9 +76,18 @@
             font-size: 1.1em;
             cursor: pointer;
             margin-top: 20px;
+            text-align: center;
         }
-        button:hover {
+        .action-button:hover {
             background-color: #0056b3;
+        }
+        #btn-retake {
+            background-color: #28a745; /* Màu xanh lá cho nút làm lại */
+            margin-top: 10px;
+            display: none; /* Ẩn ban đầu */
+        }
+        #btn-retake:hover {
+            background-color: #1e7e34;
         }
         #timer {
             text-align: center;
@@ -124,7 +133,8 @@
     <form id="quiz-form">
         </form>
 
-    <button type="button" onclick="submitQuiz()">Nộp Bài</button>
+    <button type="button" class="action-button" id="btn-submit" onclick="submitQuiz()">Nộp Bài</button>
+    <button type="button" class="action-button" id="btn-retake" onclick="window.location.reload()">Làm Lại</button>
 
     <div id="result-area">
         <h2>KẾT QUẢ BÀI LÀM</h2>
@@ -261,6 +271,8 @@
 
     const quizForm = document.getElementById('quiz-form');
     const timerDisplay = document.getElementById('timer');
+    const submitButton = document.getElementById('btn-submit');
+    const retakeButton = document.getElementById('btn-retake');
     let timeLeft = 40 * 60; // 40 phút * 60 giây
     let timerInterval;
     let quizSubmitted = false;
@@ -383,6 +395,10 @@
 
         alert(`Bài làm đã được nộp! Điểm của bạn: ${score}/20`);
         
+        // Ẩn nút nộp bài và hiện nút làm lại
+        submitButton.style.display = 'none';
+        retakeButton.style.display = 'block';
+
         // *************************************************************************
         // PHẦN GỬI BÁO CÁO KẾT QUẢ (Cần Server-side)
         // Đây là nơi bạn sẽ thêm code JavaScript để gửi dữ liệu lên server (sử dụng AJAX/Fetch)
@@ -406,11 +422,9 @@
         .then(response => response.json())
         .then(data => {
             console.log('Server response:', data);
-            // Có thể hiển thị thông báo "Đã gửi báo cáo thành công"
         })
         .catch((error) => {
             console.error('Error submitting quiz results:', error);
-            // Có thể hiển thị thông báo lỗi
         });
         */
         // *************************************************************************
