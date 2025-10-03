@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Cộng Trừ Nhân Chia Số Hữu Tỉ</title>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+        .question p {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 4px;
+        }
+        .options label:hover {
+            background-color: #e6e6e6;
+        }
+        .info-form {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #007bff;
+            border-radius: 6px;
+            background-color: #eaf5ff;
+        }
+        .info-form input {
+            padding: 10px;
+            margin-right: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 250px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #timer {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 20px;
+            border: 2px dashed #d9534f;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #result-area {
+            margin-top: 30px;
+            padding: 20px;
+            border: 2px solid #28a745;
+            border-radius: 6px;
+            background-color: #d4edda;
+            color: #155724;
+            display: none; /* Ẩn ban đầu */
+        }
+        #result-area h2 {
+            color: #155724;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Trắc nghiệm: Cộng, Trừ, Nhân, Chia Số Hữu Tỉ</h1>
+    <p style="text-align: center; font-style: italic;">Tổng cộng 20 câu - Thời gian làm bài: 40 phút (2 phút/câu)</p>
+
+    <div class="info-form">
+        <label for="student-name">Họ và Tên:</label>
+        <input type="text" id="student-name" required>
+
+        <label for="student-class" style="margin-left: 30px;">Lớp:</label>
+        <input type="text" id="student-class" required>
+    </div>
+
+    <div id="timer">Thời gian còn lại: 40:00</div>
+
+    <form id="quiz-form">
+        </form>
+
+    <button type="button" onclick="submitQuiz()">Nộp Bài</button>
+
+    <div id="result-area">
+        <h2>KẾT QUẢ BÀI LÀM</h2>
+        <p><strong>Họ và Tên:</strong> <span id="res-name"></span></p>
+        <p><strong>Lớp:</strong> <span id="res-class"></span></p>
+        <p><strong>Thời gian làm bài:</strong> <span id="res-time"></span></p>
+        <p><strong>Điểm số:</strong> <span id="res-score"></span> / 20</p>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            // Cộng (mẫu chung nhỏ)
+            question: "\\(\\frac{1}{2} + \\frac{1}{3}\\)",
+            options: ["\\(\\frac{2}{5}\\)", "\\(\\frac{5}{6}\\)", "\\(\\frac{3}{5}\\)", "\\(\\frac{6}{5}\\)"],
+            answer: "\\(\\frac{5}{6}\\)"
+        },
+        {
+            // Trừ (mẫu chung lớn)
+            question: "\\(\\frac{5}{7} - \\frac{2}{21}\\)",
+            options: ["\\(\\frac{3}{14}\\)", "\\(\\frac{13}{21}\\)", "\\(\\frac{11}{14}\\)", "\\(\\frac{10}{21}\\)"],
+            answer: "\\(\\frac{13}{21}\\)"
+        },
+        {
+            // Nhân (rút gọn)
+            question: "\\(\\frac{3}{4} \\cdot \\left(-\\frac{8}{9}\\right)\\)",
+            options: ["\\(-\\frac{2}{3}\\)", "\\(-\\frac{5}{13}\\)", "\\(-\\frac{24}{36}\\)", "\\(\\frac{2}{3}\\)"],
+            answer: "\\(-\\frac{2}{3}\\)"
+        },
+        {
+            // Chia (rút gọn)
+            question: "\\(\\frac{15}{16} : \\frac{3}{8}\\)",
+            options: ["\\(\\frac{5}{2}\\)", "\\(\\frac{45}{128}\\)", "\\(\\frac{5}{4}\\)", "\\(\\frac{2}{5}\\)"],
+            answer: "\\(\\frac{5}{2}\\)"
+        },
+        {
+            // Cộng với số âm
+            question: "\\(-\\frac{3}{5} + \\left(-\\frac{1}{5}\\right)\\)",
+            options: ["\\(\\frac{4}{5}\\)", "\\(-\\frac{4}{5}\\)", "\\(-\\frac{2}{5}\\)", "\\(\\frac{2}{5}\\)"],
+            answer: "\\(-\\frac{4}{5}\\)"
+        },
+        {
+            // Trừ số âm
+            question: "\\(\\frac{1}{4} - \\left(-\\frac{3}{4}\\right)\\)",
+            options: ["\\(-1\\)", "\\(\\frac{1}{2}\\)", "\\(1\\)", "\\(-\\frac{1}{2}\\)"],
+            answer: "\\(1\\)"
+        },
+        {
+            // Nhân với số âm
+            question: "\\(-2 \\cdot \\frac{5}{8}\\)",
+            options: ["\\(-\\frac{5}{4}\\)", "\\(\\frac{10}{8}\\)", "\\(-\\frac{4}{5}\\)", "\\(\\frac{5}{4}\\)"],
+            answer: "\\(-\\frac{5}{4}\\)"
+        },
+        {
+            // Chia với số âm
+            question: "\\(-\\frac{9}{10} : \\left(-\\frac{3}{5}\\right)\\)",
+            options: ["\\(-\\frac{3}{2}\\)", "\\(\\frac{3}{2}\\)", "\\(\\frac{27}{50}\\)", "\\(-\\frac{50}{27}\\)"],
+            answer: "\\(\\frac{3}{2}\\)"
+        },
+        {
+            // Cộng (tìm mẫu chung)
+            question: "\\(\\frac{7}{10} + 0.3\\)",
+            options: ["\\(1\\)", "\\(0.73\\)", "\\(\\frac{73}{100}\\)", "\\(\\frac{1}{10}\\)"],
+            answer: "\\(1\\)" // 0.7 + 0.3 = 1
+        },
+        {
+            // Trừ số thập phân
+            question: "\\(2.5 - \\frac{3}{2}\\)",
+            options: ["\\(1\\)", "\\(1.5\\)", "\\(0.5\\)", "\\(2\\)"],
+            answer: "\\(1\\)" // 2.5 - 1.5 = 1
+        },
+        {
+            // Nhân với số thập phân
+            question: "\\(\\frac{4}{5} \\cdot (-1.25)\\)",
+            options: ["\\(-1\\)", "\\(-1.05\\)", "\\(-\\frac{3}{4}\\)", "\\(\\frac{4}{5}\\)"],
+            answer: "\\(-1\\)" // 0.8 * (-1.25) = -1
+        },
+        {
+            // Chia với số thập phân
+            question: "\\(-0.5 : \\frac{1}{4}\\)",
+            options: ["\\(-2\\)", "\\(-0.125\\)", "\\(2\\)", "\\(0.125\\)"],
+            answer: "\\(-2\\)" // -0.5 / 0.25 = -2
+        },
+        {
+            // Phép tính kết hợp (cộng, trừ)
+            question: "\\(\\frac{1}{6} - \\frac{2}{3} + \\frac{1}{2}\\)",
+            options: ["\\(\\frac{1}{3}\\)", "\\(0\\)", "\\(\\frac{1}{6}\\)", "\\(-\\frac{1}{6}\\)"],
+            answer: "\\(0\\)" // 1/6 - 4/6 + 3/6 = 0/6 = 0
+        },
+        {
+            // Phép tính kết hợp (nhân, chia)
+            question: "\\(\\left(-\\frac{5}{6}\\right) \\cdot \\frac{3}{10} : \\frac{1}{4}\\)",
+            options: ["\\(-1\\)", "\\(-\\frac{1}{4}\\)", "\\(-\\frac{3}{4}\\)", "\\(-\\frac{4}{5}\\)"],
+            answer: "\\(-1\\)" // -5/6 * 3/10 * 4 = -1/4 * 4 = -1
+        },
+        {
+            // Cộng với số nguyên
+            question: "\\(3 + \\left(-\\frac{5}{4}\\right)\\)",
+            options: ["\\(\\frac{7}{4}\\)", "\\(\\frac{17}{4}\\)", "\\(2\\)", "\\(\\frac{1}{4}\\)"],
+            answer: "\\(\\frac{7}{4}\\)" // 12/4 - 5/4 = 7/4
+        },
+        {
+            // Trừ số nguyên
+            question: "\\(1 - 0.75\\)",
+            options: ["\\(\\frac{1}{2}\\)", "\\(0.5\\)", "\\(0.25\\)", "\\(0.15\\)"],
+            answer: "\\(0.25\\)"
+        },
+        {
+            // Nhân với số nguyên
+            question: "\\(-4 \\cdot \\left(-\\frac{7}{12}\\right)\\)",
+            options: ["\\(\\frac{7}{3}\\)", "\\(-\\frac{7}{3}\\)", "\\(\\frac{28}{12}\\)", "\\(1\\)"],
+            answer: "\\(\\frac{7}{3}\\)" // 28/12 = 7/3
+        },
+        {
+            // Chia với số nguyên
+            question: "\\(5 : \\left(-\\frac{10}{3}\\right)\\)",
+            options: ["\\(-\\frac{2}{3}\\)", "\\(-\\frac{3}{2}\\)", "\\(\\frac{3}{2}\\)", "\\(1\\)"],
+            answer: "\\(-\\frac{3}{2}\\)" // 5 * (-3/10) = -15/10 = -3/2
+        },
+        {
+            // Phép tính kết hợp (dấu ngoặc)
+            question: "\\(\\frac{2}{3} \\cdot \\left(\\frac{1}{4} + \\frac{5}{4}\\right)\\)",
+            options: ["\\(\\frac{4}{3}\\)", "\\(1\\)", "\\(\\frac{2}{3}\\)", "\\(\\frac{6}{7}\\)"],
+            answer: "\\(1\\)" // 2/3 * (6/4) = 2/3 * 3/2 = 1
+        },
+        {
+            // Phép tính kết hợp khó hơn
+            question: "\\(\\left(\\frac{1}{2} - \\frac{1}{3}\\right) : \\frac{1}{6}\\)",
+            options: ["\\(1\\)", "\\(0\\)", "\\(6\\)", "\\(\\frac{1}{36}\\)"],
+            answer: "\\(1\\)" // (3/6 - 2/6) : 1/6 = 1/6 : 1/6 = 1
+        }
+    ];
+
+    const quizForm = document.getElementById('quiz-form');
+    const timerDisplay = document.getElementById('timer');
+    let timeLeft = 40 * 60; // 40 phút * 60 giây
+    let timerInterval;
+    let quizSubmitted = false;
+    let startTime;
+
+    // Hàm tạo câu hỏi và hiển thị lên form
+    function renderQuiz() {
+        startTime = Date.now();
+        quizData.forEach((item, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            
+            // Số thứ tự và công thức LaTeX
+            const questionText = document.createElement('p');
+            questionText.innerHTML = `Câu ${index + 1}: Giải biểu thức ${item.question}`;
+            questionDiv.appendChild(questionText);
+
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+
+            // Xáo trộn thứ tự đáp án (để tránh đáp án đúng luôn ở vị trí cố định)
+            const shuffledOptions = shuffleArray([...item.options]);
+
+            shuffledOptions.forEach((option, optionIndex) => {
+                const inputId = `q${index}-opt${optionIndex}`;
+                
+                const label = document.createElement('label');
+                label.setAttribute('for', inputId);
+
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.name = `question${index}`;
+                input.value = option;
+                input.id = inputId;
+
+                label.appendChild(input);
+                label.insertAdjacentHTML('beforeend', ` ${option}`);
+                optionsDiv.appendChild(label);
+            });
+            
+            questionDiv.appendChild(optionsDiv);
+            quizForm.appendChild(questionDiv);
+        });
+
+        // Gọi MathJax để render LaTeX
+        MathJax.typesetPromise();
+
+        // Bắt đầu đếm ngược
+        startTimer();
+    }
+
+    // Hàm xáo trộn mảng (Fisher-Yates)
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Hàm đếm ngược thời gian
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.textContent = "HẾT GIỜ!";
+                if (!quizSubmitted) {
+                    submitQuiz(true); // Tự động nộp bài khi hết giờ
+                }
+                return;
+            }
+            timeLeft--;
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `Thời gian còn lại: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }, 1000);
+    }
+
+    // Hàm nộp bài
+    function submitQuiz(timeOut = false) {
+        if (quizSubmitted) return;
+        quizSubmitted = true;
+        
+        clearInterval(timerInterval);
+        
+        const name = document.getElementById('student-name').value.trim();
+        const className = document.getElementById('student-class').value.trim();
+
+        if (name === "" || className === "") {
+            alert("Vui lòng nhập đầy đủ Họ và Tên cùng Lớp trước khi nộp bài!");
+            quizSubmitted = false;
+            startTimer(); // Tiếp tục đếm ngược nếu chưa nộp được
+            return;
+        }
+
+        let score = 0;
+        const endTime = Date.now();
+        const timeTaken = Math.floor((endTime - startTime) / 1000); // Thời gian làm bài tính bằng giây
+        
+        // Chấm điểm
+        quizData.forEach((item, index) => {
+            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+            if (selectedOption && selectedOption.value === item.answer) {
+                score++;
+            }
+        });
+
+        // Hiển thị kết quả
+        document.getElementById('res-name').textContent = name;
+        document.getElementById('res-class').textContent = className;
+        document.getElementById('res-score').textContent = score;
+        
+        const minutes = Math.floor(timeTaken / 60);
+        const seconds = timeTaken % 60;
+        document.getElementById('res-time').textContent = timeOut ? 
+            `40:00 (Hết giờ)` : 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        document.getElementById('result-area').style.display = 'block';
+
+        alert(`Bài làm đã được nộp! Điểm của bạn: ${score}/20`);
+        
+        // *************************************************************************
+        // PHẦN GỬI BÁO CÁO KẾT QUẢ (Cần Server-side)
+        // Đây là nơi bạn sẽ thêm code JavaScript để gửi dữ liệu lên server (sử dụng AJAX/Fetch)
+        /*
+        const resultData = {
+            name: name,
+            className: className,
+            score: score,
+            timeTaken: timeTaken, // tính bằng giây
+            isTimeout: timeOut
+        };
+
+        // Ví dụ: Gửi dữ liệu đến một endpoint 'submit_quiz.php'
+        fetch('submit_quiz.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(resultData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Server response:', data);
+            // Có thể hiển thị thông báo "Đã gửi báo cáo thành công"
+        })
+        .catch((error) => {
+            console.error('Error submitting quiz results:', error);
+            // Có thể hiển thị thông báo lỗi
+        });
+        */
+        // *************************************************************************
+
+        // Cuộn lên kết quả
+        document.getElementById('result-area').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Khởi tạo bài trắc nghiệm khi trang tải xong
+    document.addEventListener('DOMContentLoaded', renderQuiz);
+</script>
+
+</body>
+</html>
